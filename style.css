@@ -34,3 +34,23 @@ h1 {
     background-color: #f8c8dc; /* rosado pastel */
     border-color: #e6a5bc;
 }
+
+.semester-group {
+    width: 100%;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+}
+
+.semester-group h2 {
+    color: #444;
+    margin-left: 10px;
+}
+
+.course-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 10px;
+    justify-content: flex-start;
+}
