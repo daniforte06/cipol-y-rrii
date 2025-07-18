@@ -1,5 +1,6 @@
 
 const courses = [
+
     { name: "Introducción a la Ciencia Política", id: "intro_cp", prereqs: [], semester: 1 },
     { name: "Expresión Oral y Escrita", id: "expresion", prereqs: [], semester: 1 },
     { name: "Inglés I", id: "ingles1", prereqs: [], semester: 1 },
@@ -82,35 +83,73 @@ function saveState(state) {
     localStorage.setItem("completedCourses", JSON.stringify(state));
 }
 
+
 function renderCourses() {
     const completed = loadState();
-
     container.innerHTML = "";
 
+    const semesters = {};
+
     courses.forEach(course => {
-        const prereqsMet = course.prereqs.every(p => completed.includes(p));
-
-        const courseDiv = document.createElement("div");
-        courseDiv.className = "node";
-        courseDiv.textContent = course.name;
-
-        if (completed.includes(course.id)) {
-            courseDiv.classList.add("completed");
-        } else if (!prereqsMet) {
-            courseDiv.style.opacity = "0.4";
-            courseDiv.style.pointerEvents = "none";
+        if (!semesters[course.semester]) {
+            semesters[course.semester] = [];
         }
+        semesters[course.semester].push(course);
+    });
 
-        courseDiv.addEventListener("click", () => {
+    Object.keys(semesters).sort((a, b) => a - b).forEach(sem => {
+        const semDiv = document.createElement("div");
+        semDiv.className = "semester-group";
+
+        const title = document.createElement("h2");
+        title.textContent = `Semestre ${sem}`;
+        semDiv.appendChild(title);
+
+        const courseGrid = document.createElement("div");
+        courseGrid.className = "course-grid";
+
+        semesters[sem].forEach(course => {
+            const prereqsMet = course.prereqs.every(p => completed.includes(p));
+
+            const courseDiv = document.createElement("div");
+            courseDiv.className = "node";
+            courseDiv.textContent = course.name;
+
             if (completed.includes(course.id)) {
-                const index = completed.indexOf(course.id);
-                completed.splice(index, 1);
-            } else {
-                completed.push(course.id);
+                courseDiv.classList.add("completed");
+            } else if (!prereqsMet) {
+                courseDiv.style.opacity = "0.4";
+                courseDiv.style.pointerEvents = "none";
             }
-            saveState(completed);
-            renderCourses();
+
+            courseDiv.addEventListener("click", () => {
+                if (completed.includes(course.id)) {
+                    const index = completed.indexOf(course.id);
+                    completed.splice(index, 1);
+                } else {
+                    completed.push(course.id);
+                }
+                saveState(completed);
+                renderCourses();
+            });
+
+            courseGrid.appendChild(courseDiv);
         });
+
+        semDiv.appendChild(courseGrid);
+        container.appendChild(semDiv);
+    });
+}
+
+renderCourses();
+
+        });
+
+        container.appendChild(courseDiv);
+    });
+}
+
+renderCourses();
 
         container.appendChild(courseDiv);
     });
